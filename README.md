@@ -1,3 +1,95 @@
+
+# 源码分析
+
+## 文件结构
+
+``` bash
+├── index.d.ts
+├── index.js - 入口文件
+├── karma.conf.js
+├── lib
+|  ├── adapters
+|  |  ├── README.md
+|  |  ├── http.js - 请求适配器，基于node内置http或https模块发送请
+|  |  └── xhr.js - 请求适配器，基于XMLHttpRequest来完成浏览器端请求
+|  ├── axios.js
+|  ├── cancel
+|  |  ├── Cancel.js
+|  |  ├── CancelToken.js
+|  |  └── isCancel.js
+|  ├── core
+|  |  ├── Axios.js - Axios对象实例本身
+|  |  ├── InterceptorManager.js
+|  |  ├── README.md
+|  |  ├── buildFullPath.js
+|  |  ├── createError.js
+|  |  ├── dispatchRequest.js - 读取cache里的adapter，发送请求
+|  |  ├── enhanceError.js
+|  |  ├── mergeConfig.js
+|  |  ├── settle.js
+|  |  └── transformData.js
+|  ├── defaults.js - 默认的配置，包含adapter
+|  ├── helpers
+|  |  ├── README.md
+|  |  ├── bind.js
+|  |  ├── buildURL.js
+|  |  ├── combineURLs.js
+|  |  ├── cookies.js
+|  |  ├── deprecatedMethod.js
+|  |  ├── isAbsoluteURL.js
+|  |  ├── isURLSameOrigin.js
+|  |  ├── normalizeHeaderName.js
+|  |  ├── parseHeaders.js
+|  |  └── spread.js
+|  └── utils.js
+├── package.json
+├── sandbox
+|  ├── client.html
+|  ├── client.js
+|  └── server.js
+└── webpack.config.js
+
+directory: 23 file: 109
+
+ignored: directory (1)
+
+```
+
+## 外部模块依赖
+
+请在： http://npm.broofa.com?q=axios 查看
+
+## 内部模块依赖
+
+![img](./inner.svg)
+
+
+## 知识点
+
+### 如何兼容node和browser环境
+
+通过适配器模式，
+
+``` javascript
+// axios能同时用于浏览器和node端的原理
+// 区分node和浏览器环境的适配器
+// 适配器模式的运用
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = require('./adapters/xhr');
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    // For node use HTTP adapter
+    adapter = require('./adapters/http');
+  }
+  return adapter;
+}
+```
+
+
+  
+
 # axios
 
 [![npm version](https://img.shields.io/npm/v/axios.svg?style=flat-square)](https://www.npmjs.org/package/axios)
